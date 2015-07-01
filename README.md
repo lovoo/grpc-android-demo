@@ -43,7 +43,7 @@ reply with `Hello Android`.
 
 If you did everything correctly it should look something like this:
 
-![GRPC Android client](https://raw.githubusercontent.com/Lovoo/grpc-android-demo/master/grpc-android-anim.gif)
+![GRPC Android client](https://raw.githubusercontent.com/Lovoo/grpc-android-demo/master/grpc-android-anim.gif =250x)
 
 Licence
 -------
