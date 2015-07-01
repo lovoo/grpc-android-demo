@@ -41,6 +41,10 @@ In the app first type in the hostname and the port of your server. Then click on
 button to execute a request against your GRPC server instance. In case of success the server will
 reply with `Hello Android`.
 
+If you did everything correctly it should look something like this:
+
+![GRPC Android client](https://github.com/Lovoo/grpc-android-demo/blob/master/grpc-andorid-anim.gif)
+
 Licence
 -------
 
