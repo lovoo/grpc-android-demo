@@ -1,28 +1,8 @@
-plugins {
-    id "me.tatarka.retrolambda" version "3.1.0"
-}
-
-retrolambda {
-    try {
-        String retrolambdaJdkPropValue = property("retrolambda.jdk")
-        println("retrolambda.jdk" + ": " + retrolambdaJdkPropValue)
-        jdk retrolambdaJdkPropValue
-    } catch(MissingPropertyException e) {
-        // rethrow exception with more meaningful message
-        throw new MissingPropertyException('retrolambda.jdk has to be set in ~/.gradle/gradle.properties with path to JDK8!')
-    }
-}
-
 apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 22
     buildToolsVersion "23.0.0 rc2"
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
 
     defaultConfig {
         applicationId "com.lovoo.ubuntudroid.hellogrpc"
