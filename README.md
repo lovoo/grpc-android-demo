@@ -27,8 +27,9 @@ directly in the code.
 
 Run the server from Android Studio by right-clicking the `Server.java` in the `lib_hello_grpc`
 module. This also creates a suitable run configuration which you can use to run the server again
-later. Make sure, that only one server instance runs at a time (at least if you attempt to use the
-same port).
+later. After importing the project here will be errors which are automatically resolved during the first
+build via code generation. Make sure, that only one server instance runs at a time (at least if you
+attempt to use the same port).
 
 Incoming requests are logged on stdout.
 
