@@ -80,6 +80,8 @@ public class MainActivityFragment extends Fragment {
     @Bind(R.id.main_button_send_request)
     Button mSendButton;
 
+    private ChannelImpl mChannel;
+
     public MainActivityFragment () {
     }
 
@@ -102,6 +104,7 @@ public class MainActivityFragment extends Fragment {
     public void onDestroyView () {
         super.onDestroyView();
         ButterKnife.unbind(this);
+        shutdownChannel();
     }
 
     @OnClick(R.id.main_button_send_request)
@@ -113,17 +116,32 @@ public class MainActivityFragment extends Fragment {
         mLogText.append("\n" + logMessage);
     }
 
+    private void shutdownChannel () {
+        if (mChannel != null) {
+            try {
+                mChannel.shutdown().awaitTerminated(1, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                // FIXME this call seems fishy as it interrupts the main thread
+                Thread.currentThread().interrupt();
+            }
+        }
+        mChannel = null;
+    }
+
     private class SendHelloTask extends AsyncTask<Void, Void, String> {
 
-        private String mHost;
-        private int mPort;
-        private ChannelImpl mChannel;
+        private String mHost = "";
+        private int mPort = -1;
 
         @Override
         protected void onPreExecute () {
             mSendButton.setEnabled(false);
 
-            mHost = mServerHostEditText.getText().toString();
+            String newHost = mServerHostEditText.getText().toString();
+            if (!mHost.equals(newHost)) {
+                mHost = newHost;
+                shutdownChannel();
+            }
             if (TextUtils.isEmpty(mHost)) {
                 log("ERROR: empty host name!");
                 cancel(true);
@@ -138,7 +156,11 @@ public class MainActivityFragment extends Fragment {
             }
 
             try {
-                mPort = Integer.parseInt(portString);
+                int newPort = Integer.parseInt(portString);
+                if (mPort != newPort) {
+                    mPort = newPort;
+                    shutdownChannel();
+                }
             } catch (NumberFormatException ex) {
                 log("ERROR: invalid port");
                 cancel(true);
@@ -151,7 +173,9 @@ public class MainActivityFragment extends Fragment {
         @Override
         protected String doInBackground ( Void... params ) {
             try {
-                mChannel = OkHttpChannelBuilder.forAddress(mHost, mPort).build();
+                if (mChannel == null) {
+                    mChannel = OkHttpChannelBuilder.forAddress(mHost, mPort).build();
+                }
                 GreeterGrpc.GreeterBlockingStub greeterStub = GreeterGrpc.newBlockingStub(
                         mChannel);
                 HelloRequest helloRequest = HelloRequest.newBuilder().setName("Android").build();
@@ -166,14 +190,7 @@ public class MainActivityFragment extends Fragment {
 
         @Override
         protected void onPostExecute ( String s ) {
-            if (mChannel != null) {
-                try {
-                    mChannel.shutdown().awaitTerminated(1, TimeUnit.SECONDS);
-                } catch (InterruptedException e) {
-                    // FIXME this call seems fishy as it interrupts the main thread
-                    Thread.currentThread().interrupt();
-                }
-            }
+            shutdownChannel();
             log(s);
             mSendButton.setEnabled(true);
         }
